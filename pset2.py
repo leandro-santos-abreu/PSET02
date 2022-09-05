@@ -54,12 +54,12 @@ class Image:
         aux = result.copy()
         tamanho_kernel = len(k[0])
         extra_kernels = tamanho_kernel // 2
-        for lt in range(result_height + 2):
-            if lt == 0:
-                aux.insert(lt, aux[lt].copy())
-            elif lt == result_height - 1:
-                aux.insert(lt, aux[lt].copy())
+        for lt in range(result_height + (2 * extra_kernels)):
             for k_size in range(extra_kernels):
+                if lt == 0:
+                    aux.insert(lt, aux[lt].copy())
+                elif lt == result_height - 1:
+                    aux.insert(lt, aux[lt].copy())
                 aux[lt].insert(0, aux[lt][0])
                 line_size = len(aux[lt])
                 aux[lt].append(aux[lt][line_size - 1])
@@ -67,21 +67,28 @@ class Image:
         return aux, extra_kernels
 
     def use_kernel(self, k, aux, result, extra_kernels):
+        #Função para Aplicar o Kernel de fato
+
         image_pixels_list = []
+        #Realizando um Loop na parte original da matrix "result" contida dentro da matrix aux
         for h in range(extra_kernels, self.height + (extra_kernels)):
             for w in range(extra_kernels, self.width + (extra_kernels)):
                 value = 0
-                meio_kernel = abs(int(pow(len(k), 0.5)) - 2)
+                meio_kernel = (len(k) // 2)
                 for i in range(1, extra_kernels + 1):
+                    #Pegando valores da linha acima do pixel selecionado
                     value += aux[h - extra_kernels][w - extra_kernels] * k[meio_kernel - extra_kernels][
                         meio_kernel - extra_kernels]
                     value += aux[h - extra_kernels][w] * k[meio_kernel - extra_kernels][meio_kernel]
                     value += aux[h - extra_kernels][w + extra_kernels] * k[meio_kernel - extra_kernels][
                         meio_kernel + extra_kernels]
 
+                    #Pegando valores da mesma linha do pixel selecionado
                     value += aux[h][w - extra_kernels] * k[meio_kernel][meio_kernel - extra_kernels]
+                    value += aux[h][w] * k[meio_kernel][meio_kernel]
                     value += aux[h][w + extra_kernels] * k[meio_kernel][meio_kernel + extra_kernels]
 
+                    #Pegando valores da linha abaixo do pixel selecionado
                     value += aux[h + extra_kernels][w - extra_kernels] * k[meio_kernel + extra_kernels][
                         meio_kernel - extra_kernels]
                     value += aux[h + extra_kernels][w] * k[meio_kernel + extra_kernels][meio_kernel]
@@ -89,13 +96,16 @@ class Image:
                         meio_kernel + extra_kernels]
                 value = round(value)
 
+                # Realizando recorte [0:255]
                 if value > 255:
                     value = 255
                 elif value < 0:
                     value = 0
 
+                # Atualizando matrix Rresult
                 result[h - extra_kernels][w - extra_kernels] = value
                 image_pixels_list.append(value)
+
         return result, image_pixels_list
 
     def inverted(self):
