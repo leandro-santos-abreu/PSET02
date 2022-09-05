@@ -261,7 +261,7 @@ if __name__ == '__main__':
                  "\npor exemplo 'test_images/chess.png' "
                  "\nCaminho: ")
 
-    image = Image.load('test_images/mushroom.png')
+    image = Image.load(path)
     if image is None: print("Falha ao Carregar Imagem. Encerrando o Programa...")
     else:
         print("Imagem Carregada com Sucesso!")
