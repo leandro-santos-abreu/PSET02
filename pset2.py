@@ -51,19 +51,27 @@ class Image:
 
     def add_extra_borders(self, k, result):
         result_height = self.height
-        aux = result.copy()
+        # Copiando Matrix "result"
+        aux = [[0 for x in range(self.width)] for y in range(self.height)]
+        for h in range(self.height):
+            for w in range(self.width):
+                aux[h][w] = result[h][w]
+
         tamanho_kernel = len(k[0])
-        extra_kernels = tamanho_kernel // 2
+        extra_kernels = tamanho_kernel // 2 # Linhas Extras Base
+        # Loop Para Passar por Todas as Linhas
         for lt in range(result_height + (2 * extra_kernels)):
+            # Loop para Inserir a Quantidade de Linhas e Valores Extras na Matriz Auxiliar
             for k_size in range(extra_kernels):
+                # Inserindo Linha Inicial e Linha Final
                 if lt == 0:
                     aux.insert(lt, aux[lt].copy())
                 elif lt == result_height - 1:
                     aux.insert(lt, aux[lt].copy())
+                # Inserindo Valor Inicial e Final da Linha Duplicado
                 aux[lt].insert(0, aux[lt][0])
                 line_size = len(aux[lt])
                 aux[lt].append(aux[lt][line_size - 1])
-                # Inserindo Linha Inicial e Linha Final
         return aux, extra_kernels
 
     def use_kernel(self, k, aux, result, extra_kernels):
@@ -319,7 +327,7 @@ if __name__ == '__main__':
             image_y = image.edges(kernel_y)
 
             for i in range(0, image.height):
-                for j in range(1, image.width+1):
+                for j in range(0, image.width):
                     x = pow(image_x[i][j], 2)
                     y = pow(image_y[i][j], 2)
                     value = round(pow(x + y, 0.5))
